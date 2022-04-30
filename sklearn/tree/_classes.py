@@ -63,7 +63,7 @@ __all__ = [
 DTYPE = _tree.DTYPE
 DOUBLE = _tree.DOUBLE
 
-CRITERIA_CLF = {"gini": _criterion.Gini, "entropy": _criterion.Entropy}
+CRITERIA_CLF = {"gini": _criterion.Gini, "entropy": _criterion.Entropy, 'cmse': _criterion.CMSE}
 # TODO: Remove "mse" and "mae" in version 1.2.
 CRITERIA_REG = {
     "squared_error": _criterion.MSE,
@@ -72,6 +72,7 @@ CRITERIA_REG = {
     "absolute_error": _criterion.MAE,
     "mae": _criterion.MAE,
     "poisson": _criterion.Poisson,
+    # "linex": _criterion.LinEx,
 }
 
 DENSE_SPLITTERS = {"best": _splitter.BestSplitter, "random": _splitter.RandomSplitter}

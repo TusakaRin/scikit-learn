@@ -589,6 +589,45 @@ cdef class Gini(ClassificationCriterion):
         impurity_right[0] = gini_right / self.n_outputs
 
 
+cdef class CMSE(ClassificationCriterion):
+    cdef double node_impurity(self) nogil:
+        cdef double mse = 0.0
+        cdef double min_c = 0.0
+        cdef SIZE_t k
+        cdef SIZE_t c
+
+        for k in range(self.n_outputs):
+            min_c = self.sum_total[k, 0]
+            for c in range(self.n_classes[k]):
+                if self.sum_total[k, c] < min_c:
+                    min_c = self.sum_total[k, c]
+            mse += min_c / self.weighted_n_node_samples
+        return mse / self.n_outputs
+    
+    cdef void children_impurity(self, double* impurity_left, double* impurity_right) nogil:
+        cdef double mse_left = 0.0
+        cdef double mse_right = 0.0
+        cdef double min_c = 0.0
+        cdef SIZE_t k
+        cdef SIZE_t c
+
+        for k in range(self.n_outputs):
+            min_c = self.sum_left[k, 0]
+            for c in range(self.n_classes[k]):
+                if self.sum_left[k, c] < min_c:
+                    min_c = self.sum_left[k, c]
+            mse_left += min_c / self.weighted_n_left
+
+            min_c = self.sum_right[k, 0]
+            for c in range(self.n_classes[k]):
+                if self.sum_right[k, c] < min_c:
+                    min_c = self.sum_right[k, c]
+            mse_right += min_c / self.weighted_n_right
+
+        impurity_left[0] = mse_left / self.n_outputs
+        impurity_right[0] = mse_right / self.n_outputs        
+
+
 cdef class RegressionCriterion(Criterion):
     r"""Abstract regression criterion.
 

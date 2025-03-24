@@ -767,6 +767,7 @@ cdef class Gini(ClassificationCriterion):
 
 
 cdef class CMSE(ClassificationCriterion):
+<<<<<<< HEAD
      cdef float64_t node_impurity(self) noexcept nogil:
          cdef float64_t mse = 0.0
          cdef float64_t min_c = 0.0
@@ -841,6 +842,44 @@ cdef inline void _move_sums_regression(
         memcpy(&sum_2[0], &criterion.sum_total[0], n_bytes)
         weighted_n_1[0] = 0.0
         weighted_n_2[0] = criterion.weighted_n_node_samples
+=======
+    cdef double node_impurity(self) nogil:
+        cdef double mse = 0.0
+        cdef double min_c = 0.0
+        cdef SIZE_t k
+        cdef SIZE_t c
+
+        for k in range(self.n_outputs):
+            min_c = self.sum_total[k, 0]
+            for c in range(self.n_classes[k]):
+                if self.sum_total[k, c] < min_c:
+                    min_c = self.sum_total[k, c]
+            mse += min_c / self.weighted_n_node_samples
+        return mse / self.n_outputs
+    
+    cdef void children_impurity(self, double* impurity_left, double* impurity_right) nogil:
+        cdef double mse_left = 0.0
+        cdef double mse_right = 0.0
+        cdef double min_c = 0.0
+        cdef SIZE_t k
+        cdef SIZE_t c
+
+        for k in range(self.n_outputs):
+            min_c = self.sum_left[k, 0]
+            for c in range(self.n_classes[k]):
+                if self.sum_left[k, c] < min_c:
+                    min_c = self.sum_left[k, c]
+            mse_left += min_c / self.weighted_n_left
+
+            min_c = self.sum_right[k, 0]
+            for c in range(self.n_classes[k]):
+                if self.sum_right[k, c] < min_c:
+                    min_c = self.sum_right[k, c]
+            mse_right += min_c / self.weighted_n_right
+
+        impurity_left[0] = mse_left / self.n_outputs
+        impurity_right[0] = mse_right / self.n_outputs        
+>>>>>>> 8a812354b80faf77f5fdfe5e5de0f2bcd01b86c0
 
 
 cdef class RegressionCriterion(Criterion):

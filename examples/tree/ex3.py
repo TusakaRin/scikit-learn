@@ -13,3 +13,5 @@ plot_tree(tree)
 plt.show()
 
 # %%
+plt.scatter(data[1], data[2])
+# %%
